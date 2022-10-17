@@ -1,7 +1,7 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/baldurstod/vpk_extract)](https://goreportcard.com/badge/github.com/baldurstod/vpk_extract)
 
 # vpk_extract
-A `.vpk` (Valve Pak) incremental extractor
+A `.vpk` (Valve Pak) incremental extractor. Check the CRCs inside the `.vpk` against a list of know CRCs.
 
 # Build
 
