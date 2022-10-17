@@ -1,0 +1,9 @@
+# Test folder
+var/
+
+# Binaries
+*.exe
+vpk_extract
+
+# Command
+*.bat
