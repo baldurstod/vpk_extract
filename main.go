@@ -131,6 +131,9 @@ func generateCRCFile(outputFolder string) {
 	crcPath := outputFolder + crcFilename
 
 	e := filepath.Walk(outputFolder, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			panic(err)
+		}
 		if strings.HasSuffix(path, crcFilename) { // Skip vpk_extract.crc.json
 			return nil;
 		}
