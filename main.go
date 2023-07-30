@@ -7,6 +7,7 @@ import (
 	"flag"
 	"strings"
 	"log"
+	"path"
 	"path/filepath"
 	"io/ioutil"
 	glob "github.com/ganbarodigital/go_glob"
@@ -59,7 +60,7 @@ func extractVPK(inputFile string, outputFolder string, globPatterns []string) {
 	fileCRC := fileCRC{}
 	fileCRC.init()
 
-	crcPath := outputFolder + crcFilename
+	crcPath := path.Join(outputFolder, crcFilename)
 
 	crcFileContent, err := os.ReadFile(crcPath)
 	if err == nil {
@@ -86,7 +87,7 @@ func extractVPK(inputFile string, outputFolder string, globPatterns []string) {
 	// Iterate through all files in the VPK
 	for _, entry := range pak.Entries() {
 		fileName := entry.Filename()
-		extractName := outputFolder + fileName
+		extractName := path.Join(outputFolder, fileName)
 		for _, g := range globs {
 
 			match, err := g.Match(fileName)
@@ -100,7 +101,7 @@ func extractVPK(inputFile string, outputFolder string, globPatterns []string) {
 				if crc, exist := fileCRC.getCRC(fileName); !exist || crc != entryCRC {
 					if fileReader, error := entry.Open(); error == nil {
 
-						err := os.MkdirAll(outputFolder + entry.Path(), 0755)
+						err := os.MkdirAll(path.Join(outputFolder, entry.Path()), 0755)
 						if err != nil && !os.IsExist(err) {
 							fmt.Println(err)
 						}
@@ -129,7 +130,7 @@ func generateCRCFile(outputFolder string) {
 	fileCRC.init()
 
 
-	crcPath := outputFolder + crcFilename
+	crcPath := path.Join(outputFolder, crcFilename)
 
 	e := filepath.WalkDir(outputFolder, func(path string, info fs.DirEntry, err error) error {
 		if err != nil {
