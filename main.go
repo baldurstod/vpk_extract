@@ -18,8 +18,7 @@ import (
 )
 
 const crcFilename = "vpk_extract.crc.json"
-var quit = make(chan int)
-var c = make(chan os.Signal, 1)
+var sigchan = make(chan os.Signal, 1)
 
 type fileCRC struct {
 	crcs map[string]interface{}
@@ -30,12 +29,7 @@ func main() {
 	var outputFolder string
 	var command string
 
-	signal.Notify(c, os.Interrupt)
-	go func(){
-		for _ = range c {
-			close(quit)
-		}
-	}()
+	signal.Notify(sigchan, os.Interrupt)
 
 	flag.StringVar(&inputFile, "i", "", "Input VPK")
 	flag.StringVar(&outputFolder, "o", "", "Output folder")
@@ -130,7 +124,7 @@ mainLoop:
 			}
 		}
 		select {
-		case <- quit:
+		case <- sigchan:
 			fmt.Println("Interrupted, exiting...")
 			break mainLoop
 		default:
