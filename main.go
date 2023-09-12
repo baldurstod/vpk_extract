@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"os/signal"
 	"io/fs"
 	"fmt"
 	"flag"
@@ -17,6 +18,8 @@ import (
 )
 
 const crcFilename = "vpk_extract.crc.json"
+var quit = make(chan int)
+var c = make(chan os.Signal, 1)
 
 type fileCRC struct {
 	crcs map[string]interface{}
@@ -26,6 +29,13 @@ func main() {
 	var inputFile string
 	var outputFolder string
 	var command string
+
+	signal.Notify(c, os.Interrupt)
+	go func(){
+		for _ = range c {
+			close(quit)
+		}
+	}()
 
 	flag.StringVar(&inputFile, "i", "", "Input VPK")
 	flag.StringVar(&outputFolder, "o", "", "Output folder")
@@ -85,6 +95,7 @@ func extractVPK(inputFile string, outputFolder string, globPatterns []string) {
 	}
 
 	// Iterate through all files in the VPK
+mainLoop:
 	for _, entry := range pak.Entries() {
 		fileName := entry.Filename()
 		extractName := path.Join(outputFolder, fileName)
@@ -117,6 +128,12 @@ func extractVPK(inputFile string, outputFolder string, globPatterns []string) {
 				}
 				break;
 			}
+		}
+		select {
+		case <- quit:
+			fmt.Println("Interrupted, exiting...")
+			break mainLoop
+		default:
 		}
 	}
 
