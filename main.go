@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"time"
 	"os/signal"
 	"io/fs"
 	"fmt"
@@ -28,12 +29,14 @@ func main() {
 	var inputFile string
 	var outputFolder string
 	var command string
+	var sleep int
 
 	signal.Notify(sigchan, os.Interrupt)
 
 	flag.StringVar(&inputFile, "i", "", "Input VPK")
 	flag.StringVar(&outputFolder, "o", "", "Output folder")
 	flag.StringVar(&command, "c", "extract", "Command: can be extract or crc")
+	flag.IntVar(&sleep, "s", 0, "Sleep x milliseconds after each file written")
 	flag.Parse()
 
 	if (command == "extract") && (inputFile == "") {
@@ -52,13 +55,13 @@ func main() {
 
 	switch command {
 	case "extract":
-		extractVPK(inputFile, outputFolder, globPatterns)
+		extractVPK(inputFile, outputFolder, globPatterns, time.Duration(sleep) * time.Millisecond)
 	case "crc":
 		generateCRCFile(outputFolder)
 	}
 }
 
-func extractVPK(inputFile string, outputFolder string, globPatterns []string) {
+func extractVPK(inputFile string, outputFolder string, globPatterns []string, sleep time.Duration) {
 	var pak vpk.VPK
 	var err error
 	fileCRC := fileCRC{}
@@ -118,6 +121,7 @@ mainLoop:
 						if error != nil {
 							fmt.Println(error)
 						}
+						time.Sleep(sleep)
 					}
 				}
 				break;
