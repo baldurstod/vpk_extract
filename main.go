@@ -178,14 +178,14 @@ func generateCRCFile(outputFolder string) {
 	os.WriteFile(crcPath, j, 0666)
 }
 
-func (this *fileCRC) init() {
-	this.crcs = make(map[string]interface{})
+func (f *fileCRC) init() {
+	f.crcs = make(map[string]interface{})
 }
 
-func (this *fileCRC) addFile(relativePath string, crc uint32) {
+func (f *fileCRC) addFile(relativePath string, crc uint32) {
 	path := strings.Split(relativePath, "/")
 
-	current := this.crcs
+	current := f.crcs
 
 	for index, p := range path {
 		if index == len(path)-1 {

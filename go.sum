@@ -1,3 +1,5 @@
+github.com/baldurstod/go-vpk v0.0.0-20240807073618-a1390f518b40 h1:z0dhATJGFFE8wYY8aPL66JglmxSmNjRLNPHX2w9XoDE=
+github.com/baldurstod/go-vpk v0.0.0-20240807073618-a1390f518b40/go.mod h1:1HIma+SasjhfPiaGp6DScJTfRJn0geXhyl+y6ua07ko=
 github.com/davecgh/go-spew v1.1.0 h1:ZDRjVQ15GmhC3fiQ8ni8+OwkZQO4DARzQgrnXU1Liz8=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/ganbarodigital/go_glob v1.0.0 h1:WqTFArtji400U7e84N8qUmUM6L8Rgt2s8ynla6f4D+Q=

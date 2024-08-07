@@ -6,4 +6,4 @@ toolchain go1.22.4
 
 require github.com/ganbarodigital/go_glob v1.0.0
 
-require github.com/baldurstod/go-vpk v0.0.0-20240806023734-25ff2ef0976b
+require github.com/baldurstod/go-vpk v0.0.0-20240807073618-a1390f518b40
