@@ -202,21 +202,21 @@ func (f *fileCRC) addFile(relativePath string, crc uint32) {
 	}
 }
 
-func (this *fileCRC) getCRC(relativePath string) (uint32, bool) {
+func (f *fileCRC) getCRC(relativePath string) (uint32, bool) {
 	path := strings.Split(relativePath, "/")
 
-	current := this.crcs
+	current := f.crcs
 
 	for index, p := range path {
 		//fmt.Println(index)
 		next, exist := current[p]
 		if index == len(path)-1 {
 			if exist {
-				switch next.(type) {
+				switch v := next.(type) {
 				case uint32:
-					return next.(uint32), true
+					return v, true
 				case float64:
-					return uint32(next.(float64)), true
+					return uint32(v), true
 				default:
 					fmt.Println(next)
 					panic("Unknown type")
