@@ -1,24 +1,26 @@
 package main
 
 import (
-	"os"
-	"time"
-	"os/signal"
-	"io/fs"
-	"fmt"
+	"encoding/json"
 	"flag"
-	"strings"
+	"fmt"
+	"hash/crc32"
+	"io/fs"
+	"io/ioutil"
 	"log"
+	"os"
+	"os/signal"
 	"path"
 	"path/filepath"
-	"io/ioutil"
-	glob "github.com/ganbarodigital/go_glob"
-	"encoding/json"
-	"hash/crc32"
+	"strings"
+	"time"
+
 	"github.com/baldurstod/go-vpk"
+	glob "github.com/ganbarodigital/go_glob"
 )
 
 const crcFilename = "vpk_extract.crc.json"
+
 var sigchan = make(chan os.Signal, 1)
 
 type fileCRC struct {
@@ -55,7 +57,7 @@ func main() {
 
 	switch command {
 	case "extract":
-		extractVPK(inputFile, outputFolder, globPatterns, time.Duration(sleep) * time.Millisecond)
+		extractVPK(inputFile, outputFolder, globPatterns, time.Duration(sleep)*time.Millisecond)
 	case "crc":
 		generateCRCFile(outputFolder)
 	}
@@ -73,7 +75,6 @@ func extractVPK(inputFile string, outputFolder string, globPatterns []string, sl
 	if err == nil {
 		_ = json.Unmarshal(crcFileContent, &fileCRC.crcs)
 	}
-
 
 	if strings.HasSuffix(inputFile, "_dir.vpk") {
 		pak, err = vpk.OpenDir(inputFile)
@@ -103,7 +104,7 @@ mainLoop:
 				panic(err)
 			}
 
-			if (match) {
+			if match {
 				entryCRC := entry.CRC()
 
 				if crc, exist := fileCRC.getCRC(fileName); !exist || crc != entryCRC {
@@ -124,17 +125,16 @@ mainLoop:
 						time.Sleep(sleep)
 					}
 				}
-				break;
+				break
 			}
 		}
 		select {
-		case <- sigchan:
+		case <-sigchan:
 			fmt.Println("Interrupted, exiting...")
 			break mainLoop
 		default:
 		}
 	}
-
 
 	j, _ := json.Marshal(&fileCRC.crcs)
 	os.WriteFile(crcPath, j, 0666)
@@ -144,7 +144,6 @@ func generateCRCFile(outputFolder string) {
 	fileCRC := fileCRC{}
 	fileCRC.init()
 
-
 	crcPath := path.Join(outputFolder, crcFilename)
 
 	e := filepath.WalkDir(outputFolder, func(path string, info fs.DirEntry, err error) error {
@@ -152,7 +151,7 @@ func generateCRCFile(outputFolder string) {
 			panic(err)
 		}
 		if strings.HasSuffix(path, crcFilename) { // Skip vpk_extract.crc.json
-			return nil;
+			return nil
 		}
 
 		if !info.IsDir() {
@@ -189,7 +188,7 @@ func (this *fileCRC) addFile(relativePath string, crc uint32) {
 	current := this.crcs
 
 	for index, p := range path {
-		if index == len(path) - 1 {
+		if index == len(path)-1 {
 			current[p] = crc
 		} else {
 			//fmt.Println(index)
@@ -211,19 +210,19 @@ func (this *fileCRC) getCRC(relativePath string) (uint32, bool) {
 	for index, p := range path {
 		//fmt.Println(index)
 		next, exist := current[p]
-		if index == len(path) - 1 {
+		if index == len(path)-1 {
 			if exist {
 				switch next.(type) {
 				case uint32:
-					return next.(uint32), true;
+					return next.(uint32), true
 				case float64:
-					return uint32(next.(float64)), true;
+					return uint32(next.(float64)), true
 				default:
 					fmt.Println(next)
 					panic("Unknown type")
 				}
 			} else {
-				return 0, false;
+				return 0, false
 			}
 		}
 		if !exist {
@@ -232,5 +231,5 @@ func (this *fileCRC) getCRC(relativePath string) (uint32, bool) {
 		}
 		current = (next).(map[string]interface{})
 	}
-	return 0, false;
+	return 0, false
 }
